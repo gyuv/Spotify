@@ -19,6 +19,8 @@ The layout is picked automatically. You can force one with `?layout=desktop|mobi
 ## Features
 
 - **Live player vibe**: album-art backdrop that blurs and slowly rotates, an accent colour taken from the cover, a reactive ring visualizer, a breathing play button, a "LIVE on <device>" pill, and marquee titles.
+- **Synced lyrics 🎤**: karaoke-style lyrics where a gold sweep fills each line as it's sung. They follow the song (pausing while you scroll), tapping a line jumps there, and long instrumental breaks show animated "♪ • • •" dots. You can nudge the timing ±¼ s, pick Small/Medium/Large text, and fall back to plain lyrics when no timed version exists. Long-press a line, or tap **Share line**, to make a **1080×1920 story card** with the album art. Lyrics appear in a mobile tab, the desktop side panel, a full-screen desktop view and a TV view. They come from [LRCLIB](https://lrclib.net), which is free and needs no key.
+- **Crossfade ⋈**: 0 to 12 s (6 s by default). Each song fades out over its last seconds (an equal-power curve) and the next one fades in. It works with the in-browser player and any Spotify Connect device that allows volume control. Pausing or seeking cancels it instantly, and your volume can never get stuck low: a crash or a closed tab mid-fade is repaired on the next launch.
 - **Motion mode 🎬**: shows the track's official music video, muted, through YouTube's official embedded player and kept in sync with the Spotify audio. Needs a YouTube API key.
 - **Party Rooms 👥**: real-time group listening. The host's playback is mirrored to every guest's own Spotify. Guests can suggest songs (auto-queued or approved by the host), send live emoji reactions, and add to a **collaborative shared playlist**. Hosting passes to the next person automatically. Invite links work as `/?party=CODE`.
 - **Sharing**: uses the phone's native share sheet, or copies the link on desktop.
@@ -40,6 +42,7 @@ npm install
 cp .env.example .env        # fill in VITE_SPOTIFY_CLIENT_ID
 npm run dev                 # http://127.0.0.1:5173
 npm run party               # optional: Party Rooms server on :8787
+npm test                    # unit tests (lyrics parser, crossfade engine)
 ```
 
 1. Create an app at <https://developer.spotify.com/dashboard>.
@@ -55,6 +58,7 @@ Playback inside the browser needs **Spotify Premium**. That's Spotify's rule for
 | --- | --- |
 | `VITE_YOUTUBE_API_KEY` | Motion mode. Create a YouTube Data API v3 key in Google Cloud Console. |
 | `VITE_PARTY_URL` | Party Rooms server (`ws://…` locally, `wss://…` in production). |
+| `VITE_LYRICS_URL` | Lyrics source. Defaults to the public LRCLIB; point it at a self-hosted mirror if you prefer. |
 
 ## Platform guides
 
@@ -75,8 +79,11 @@ Playback inside the browser needs **Spotify Premium**. That's Spotify's rule for
 ```
 src/
   lib/          auth (PKCE), api, store, engine (SDK, polling, media session, sleep timer),
-                party, youtube, share, color, layout detection
-  components/   NowPlaying (Live stage), Motion, Visualizer, Queue, CommandPalette, shared UI
+                crossfade, lyrics (LRCLIB + LRC parser), lyricCard, party, youtube, share,
+                color, layout detection
+  components/   NowPlaying (Live stage), Lyrics, Settings, Motion, Visualizer, Queue,
+                CommandPalette, shared UI
+  __tests__/    Vitest unit tests
   views/        Home, Search, Library, Playlist, Artist, Stats, Party
   shells/       DesktopShell, MobileShell, TvShell
 server/party.mjs  WebSocket relay for Party Rooms
@@ -88,7 +95,8 @@ android/  ios/    Capacitor native projects
 RY Music is an independent project. It is not affiliated with or endorsed by Spotify or YouTube.
 "Spotify" is a trademark of Spotify AB. RY Music uses its own logo and follows the
 [Spotify Developer Terms](https://developer.spotify.com/terms) and YouTube API Services Terms. Videos play muted
-through YouTube's official embed, and audio is never downloaded.
+through YouTube's official embed, and audio is never downloaded. Lyrics are fetched live from LRCLIB and shown
+with attribution; they are not bundled with the app.
 
 ## Screenshots (rendered with demo data)
 
@@ -96,8 +104,14 @@ through YouTube's official embed, and audio is never downloaded.
 | --- | --- |
 | ![](docs/screenshots/desktop-home.png) | ![](docs/screenshots/desktop-stage.png) |
 
-| Mobile Home | Mobile Live | Mobile Stats | Party Room |
-| --- | --- | --- | --- |
-| ![](docs/screenshots/mobile-home.png) | ![](docs/screenshots/mobile-live.png) | ![](docs/screenshots/mobile-stats.png) | ![](docs/screenshots/party-guest.png) |
+| Desktop Lyrics (Stage) | Lyrics in the Live Deck |
+| --- | --- |
+| ![](docs/screenshots/desktop-stage-lyrics.png) | ![](docs/screenshots/desktop-deck-lyrics.png) |
 
-![Android TV](docs/screenshots/tv-focus.png)
+| Mobile Home | Mobile Live | Mobile Lyrics | Settings / Crossfade | Party Room |
+| --- | --- | --- | --- | --- |
+| ![](docs/screenshots/mobile-home.png) | ![](docs/screenshots/mobile-live.png) | ![](docs/screenshots/mobile-lyrics.png) | ![](docs/screenshots/mobile-settings.png) | ![](docs/screenshots/party-guest.png) |
+
+| Android TV | TV Lyrics | Lyric story card |
+| --- | --- | --- |
+| ![](docs/screenshots/tv-focus.png) | ![](docs/screenshots/tv-lyrics.png) | <img src="docs/screenshots/lyric-card.png" width="220" /> |

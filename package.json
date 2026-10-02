@@ -11,7 +11,8 @@
     "cap:sync": "npm run build && npx cap sync",
     "android": "npm run cap:sync && npx cap open android",
     "ios": "npm run cap:sync && npx cap open ios",
-    "party": "node server/party.mjs"
+    "party": "node server/party.mjs",
+    "test": "vitest run"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.1",
@@ -29,7 +30,9 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.1",
+    "happy-dom": "^20.14.5",
     "typescript": "^7.0.2",
-    "vite": "^8.3.2"
+    "vite": "^8.3.2",
+    "vitest": "^5.0.3"
   }
 }

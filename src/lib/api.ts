@@ -22,7 +22,14 @@ export type Playlist = {
   tracks?: { total: number };
   items?: { total: number };
 };
-export type Device = { id: string; name: string; type: string; is_active: boolean; volume_percent: number | null };
+export type Device = {
+  id: string;
+  name: string;
+  type: string;
+  is_active: boolean;
+  volume_percent: number | null;
+  supports_volume?: boolean;
+};
 export type PlaybackState = {
   is_playing: boolean;
   progress_ms: number;

@@ -2,6 +2,7 @@
 // a local position ticker, Media Session (lock screen / notification controls) and the sleep timer.
 import { Spotify } from './api';
 import { getToken } from './auth';
+import { startCrossfade } from './crossfade';
 import { act, refresh, useStore } from './store';
 
 declare global {
@@ -14,7 +15,12 @@ type SdkPlayer = {
   connect: () => Promise<boolean>;
   addListener: (ev: string, cb: (arg: any) => void) => void;
   activateElement?: () => Promise<void>;
+  setVolume: (v: number) => Promise<void>;
 };
+
+let sdk: SdkPlayer | null = null;
+/** Instant local volume on the in-browser player (0..1). Used by crossfade for smooth ramps. */
+export const sdkSetVolume = (v: number) => sdk?.setVolume(Math.min(1, Math.max(0, v))).catch(() => {});
 
 const mobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
@@ -31,6 +37,7 @@ function loadSdk() {
     player.addListener('player_state_changed', () => refresh());
     player.addListener('account_error', () => useStore.getState().notify('In-browser playback needs Spotify Premium'));
     player.connect();
+    sdk = player;
     const unlock = () => player.activateElement?.();
     document.addEventListener('pointerdown', unlock, { once: true });
   };
@@ -69,6 +76,7 @@ export function startEngine() {
   started = true;
   loadSdk();
   mediaSession();
+  startCrossfade();
   refresh();
   let poll = window.setInterval(refresh, 3000);
   document.addEventListener('visibilitychange', () => {

@@ -42,8 +42,9 @@ export function PlaylistView({ id, title }: { id: string; title: string }) {
     return d;
   }, [data]);
 
+  // Offset by URI, not index: unavailable/local tracks are filtered out of `tracks`, so indexes drift.
   const play = (i: number) =>
-    isDefault ? playContext(`spotify:playlist:${id}`, i) : playTracks(tracks, i);
+    isDefault && tracks[i] ? playContext(`spotify:playlist:${id}`, tracks[i].uri) : playTracks(tracks, i);
 
   return (
     <div className="view playlist">

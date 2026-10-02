@@ -25,6 +25,11 @@ type State = {
   paletteOpen: boolean;
   theme: ThemeMode;
   sleepAt: number | null;
+  /** Crossfade length in seconds; 0 = off. */
+  crossfade: number;
+  /** True while a crossfade transition is running (drives the UI badge). */
+  fading: boolean;
+  lyricsSize: LyricsSize;
   toast: string | null;
   set: (p: Partial<State>) => void;
   go: (v: View) => void;
@@ -32,13 +37,26 @@ type State = {
   notify: (msg: string) => void;
 };
 
-const savedTheme = (() => {
+export type LyricsSize = 's' | 'm' | 'l';
+
+/** Per-device preferences in localStorage (wrapped: private mode can throw). */
+export function pref<T>(key: string, fallback: T): T {
   try {
-    return (localStorage.getItem('pulse.theme') as ThemeMode) || 'gold';
+    const v = localStorage.getItem(`ry.${key}`);
+    return v === null ? fallback : (JSON.parse(v) as T);
   } catch {
-    return 'gold';
+    return fallback;
   }
-})();
+}
+export function savePref(key: string, value: unknown) {
+  try {
+    localStorage.setItem(`ry.${key}`, JSON.stringify(value));
+  } catch {
+    /* ignore */
+  }
+}
+
+const savedTheme = pref<ThemeMode>('theme', 'gold');
 
 export const useStore = create<State>((set, get) => ({
   playback: null,
@@ -52,6 +70,9 @@ export const useStore = create<State>((set, get) => ({
   paletteOpen: false,
   theme: savedTheme,
   sleepAt: null,
+  crossfade: pref('crossfade', 6),
+  fading: false,
+  lyricsSize: pref<LyricsSize>('lyricsSize', 'm'),
   toast: null,
   set: (p) => set(p),
   go: (v) => set({ history: [...get().history, get().view].slice(-30), view: v }),
@@ -114,8 +135,9 @@ export function playTracks(tracks: Track[], start = 0) {
   return act(() => Spotify.play({ uris: tracks.slice(start, start + 100).map((t) => t.uri) }, device));
 }
 
-export function playContext(uri: string, offset?: number) {
+export function playContext(uri: string, offset?: number | string) {
   const { sdkDeviceId, playback } = useStore.getState();
   const device = playback?.device?.id ? undefined : sdkDeviceId ?? undefined;
-  return act(() => Spotify.play({ context_uri: uri, ...(offset !== undefined ? { offset: { position: offset } } : {}) }, device));
+  const off = offset === undefined ? {} : { offset: typeof offset === 'string' ? { uri: offset } : { position: offset } };
+  return act(() => Spotify.play({ context_uri: uri, ...off }, device));
 }

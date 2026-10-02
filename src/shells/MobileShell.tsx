@@ -2,8 +2,8 @@ import { useRef, useState } from 'react';
 import { Cover, EqBars, ThemePicker } from '../components/common';
 import { Icon } from '../components/icons';
 import { NowPlaying } from '../components/NowPlaying';
+import { Settings } from '../components/Settings';
 import { art, artists, Spotify } from '../lib/api';
-import { logout } from '../lib/auth';
 import { act, useStore } from '../lib/store';
 import { Content } from '../views/Content';
 import { NAV } from './nav';
@@ -18,6 +18,7 @@ export function MobileShell() {
   const pb = useStore((s) => s.playback);
   const pos = useStore((s) => s.position);
   const [theme, setTheme] = useState(false);
+  const [settings, setSettings] = useState(false);
   const t = pb?.item;
   const sx = useRef(0);
   const title = 'title' in view ? view.title : NAV.find((n) => n.name === view.name)?.label;
@@ -36,8 +37,8 @@ export function MobileShell() {
         <button className="icon-btn" onClick={() => setTheme(true)} aria-label="Theme">
           <Icon name="palette" />
         </button>
-        <button className="icon-btn" onClick={logout} aria-label="Sign out">
-          <Icon name="more" />
+        <button className="icon-btn" onClick={() => setSettings(true)} aria-label="Settings">
+          <Icon name="settings" />
         </button>
       </header>
 
@@ -88,6 +89,7 @@ export function MobileShell() {
 
       {nowPlayingOpen && <NowPlaying mode="sheet" />}
       {theme && <ThemePicker onClose={() => setTheme(false)} />}
+      {settings && <Settings onClose={() => setSettings(false)} />}
     </div>
   );
 }

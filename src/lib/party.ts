@@ -73,6 +73,7 @@ export function joinParty(code: string, name: string) {
 }
 
 export function leaveParty() {
+  clearTimeout(pending);
   unsub?.();
   unsub = null;
   ws?.close();
@@ -100,11 +101,18 @@ function startHosting() {
 }
 
 let lastFollow = 0;
+let pending: number | undefined;
 function follow(s: HostState) {
+  // Debounce bursts, but never drop the latest state: replay it once the window passes.
+  const wait = 1500 - (Date.now() - lastFollow);
+  if (wait > 0) {
+    clearTimeout(pending);
+    pending = window.setTimeout(() => follow(s), wait);
+    return;
+  }
+  lastFollow = Date.now();
   const { playback, position, sdkDeviceId } = useStore.getState();
   const target = s.position + (s.playing ? Date.now() - s.at : 0);
-  if (Date.now() - lastFollow < 1500) return; // debounce bursts
-  lastFollow = Date.now();
   const device = playback?.device?.id ? undefined : sdkDeviceId ?? undefined;
   if (playback?.item?.uri !== s.uri) {
     log(`Now playing: ${s.name} — ${s.artist}`);

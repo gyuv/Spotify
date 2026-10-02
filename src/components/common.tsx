@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { art, artists, fmt, Spotify, type Device, type Track } from '../lib/api';
 import { useParty, suggest } from '../lib/party';
-import { act, toggleLike, useStore } from '../lib/store';
+import { act, savePref, toggleLike, useStore } from '../lib/store';
 import { Icon } from './icons';
 
 export function Cover({ src, size, round, className = '' }: { src: string; size?: number; round?: boolean; className?: string }) {
@@ -125,7 +125,7 @@ export function TrackRow({ track, index, onPlay, showArt = true }: { track: Trac
   const notify = useStore((s) => s.notify);
   const guest = useParty((s) => Boolean(s.room) && !s.isHost);
   return (
-    <div className={`track-row ${current ? 'current' : ''}`} onClick={onPlay} tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && onPlay()}>
+    <div className={`track-row ${current ? 'current' : ''}`} onClick={onPlay} tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && e.target === e.currentTarget && onPlay()}>
       {index !== undefined && <span className="idx">{current ? <EqBars /> : index + 1}</span>}
       {showArt && <Cover src={art(track.album?.images, 64)} size={44} />}
       <div className="meta">
@@ -232,9 +232,7 @@ export function ThemePicker({ onClose }: { onClose: () => void }) {
           className={`device ${theme === k ? 'on' : ''}`}
           onClick={() => {
             set({ theme: k });
-            try {
-              localStorage.setItem('pulse.theme', k);
-            } catch {}
+            savePref('theme', k);
           }}
         >
           <span className={`swatch ${k}`} />

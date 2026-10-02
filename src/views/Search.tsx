@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Card, TrackRow } from '../components/common';
 import { Icon } from '../components/icons';
 import { art, Spotify } from '../lib/api';
-import { playContext, playTracks, useStore } from '../lib/store';
+import { playContext, playTracks, pref, savePref, useStore } from '../lib/store';
 
 type Res = Awaited<ReturnType<typeof Spotify.search>>;
 const MOODS = ['chill', 'workout', 'focus', 'party', 'sleep', 'lofi', 'throwback', 'acoustic', 'night drive', 'rainy day'];
@@ -11,13 +11,7 @@ export function Search() {
   const go = useStore((s) => s.go);
   const [q, setQ] = useState('');
   const [res, setRes] = useState<Res | null>(null);
-  const [recent, setRecent] = useState<string[]>(() => {
-    try {
-      return JSON.parse(localStorage.getItem('pulse.searches') ?? '[]');
-    } catch {
-      return [];
-    }
-  });
+  const [recent, setRecent] = useState<string[]>(() => pref<string[]>('searches', []));
 
   useEffect(() => {
     if (q.trim().length < 2) return setRes(null);
@@ -25,9 +19,7 @@ export function Search() {
       Spotify.search(q).then(setRes).catch(() => {});
       const next = [q, ...recent.filter((r) => r !== q)].slice(0, 8);
       setRecent(next);
-      try {
-        localStorage.setItem('pulse.searches', JSON.stringify(next));
-      } catch {}
+      savePref('searches', next);
     }, 350);
     return () => clearTimeout(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -26,6 +26,9 @@ const p = {
   party: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20a6 6 0 0 1 12 0M17 11a2.5 2.5 0 1 0 0-5M21 19a5 5 0 0 0-4-4.9',
   share: 'M12 15V3M8 7l4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7',
   video: 'M3 6h12v12H3zM15 10l6-3v10l-6-3',
+  lyrics: 'M4 5h16v11H9l-5 4zM8 9h8M8 12h5',
+  fade: 'M3 6v12l9-6zM21 6v12l-9-6z',
+  settings: 'M4 7h10M18 7h2M4 17h4M12 17h8M14 5v4M8 15v4',
 };
 
 export type IconName = keyof typeof p;

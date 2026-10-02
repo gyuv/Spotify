@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Controls, Cover, DevicePicker, LikeButton, Progress, SleepTimer, ThemePicker, Volume } from '../components/common';
+import { GlassCover } from '../components/GlassCover';
 import { Icon } from '../components/icons';
 import { NowPlaying } from '../components/NowPlaying';
+import { Lyrics } from '../components/Lyrics';
 import { Queue } from '../components/Queue';
+import { Settings } from '../components/Settings';
 import { Visualizer } from '../components/Visualizer';
 import { art, artists, Spotify } from '../lib/api';
-import { logout } from '../lib/auth';
 import { act, toggleLike, useStore } from '../lib/store';
 import { Content } from '../views/Content';
 import { NAV } from './nav';
@@ -19,8 +21,11 @@ export function DesktopShell() {
   const { view, go, back, history, nowPlayingOpen, set, sleepAt } = useStore();
   const t = useStore((s) => s.playback?.item);
   const playing = useStore((s) => s.playback?.is_playing);
-  const [sheet, setSheet] = useState<null | 'devices' | 'sleep' | 'theme'>(null);
+  const [sheet, setSheet] = useState<null | 'devices' | 'sleep' | 'theme' | 'settings'>(null);
   const [deck, setDeck] = useState(true);
+  const [deckTab, setDeckTab] = useState<'queue' | 'lyrics'>('queue');
+  const crossfade = useStore((s) => s.crossfade);
+  const fading = useStore((s) => s.fading);
 
   useEffect(() => {
     const k = (e: KeyboardEvent) => {
@@ -60,9 +65,9 @@ export function DesktopShell() {
           <Icon name="palette" />
           <span>Vibe</span>
         </button>
-        <button className="rail-btn" onClick={logout} title="Sign out">
-          <Icon name="x" />
-          <span>Exit</span>
+        <button className="rail-btn" onClick={() => setSheet('settings')} title="Settings">
+          <Icon name="settings" />
+          <span>Settings</span>
         </button>
       </nav>
 
@@ -85,7 +90,7 @@ export function DesktopShell() {
         <aside className="deck">
           <div className="deck-art" onClick={() => set({ nowPlayingOpen: true })} title="Open Stage (F)">
             <Visualizer variant="ring" />
-            <Cover src={art(t?.album.images, 640)} className={playing ? 'playing' : ''} />
+            <GlassCover src={art(t?.album.images, 640)} playing={playing} />
           </div>
           <div className="deck-meta">
             <div>
@@ -94,7 +99,15 @@ export function DesktopShell() {
             </div>
             {t && <LikeButton track={t} />}
           </div>
-          <Queue compact />
+          <div className="seg deck-tabs">
+            <button className={deckTab === 'queue' ? 'on' : ''} onClick={() => setDeckTab('queue')}>
+              Up next
+            </button>
+            <button className={deckTab === 'lyrics' ? 'on' : ''} onClick={() => setDeckTab('lyrics')}>
+              Lyrics
+            </button>
+          </div>
+          {deckTab === 'queue' ? <Queue compact /> : t ? <Lyrics track={t} mode="deck" /> : null}
         </aside>
       )}
 
@@ -112,6 +125,14 @@ export function DesktopShell() {
         </div>
         <div className="dock-right">
           <Visualizer variant="bars" className="mini-viz" />
+          <button
+            className={`icon-btn ${crossfade ? 'on' : ''} ${fading ? 'pulse' : ''}`}
+            onClick={() => setSheet('settings')}
+            aria-label={`Crossfade ${crossfade ? `${crossfade}s` : 'off'}`}
+            title={`Crossfade: ${crossfade ? `${crossfade}s` : 'off'}`}
+          >
+            <Icon name="fade" size={18} />
+          </button>
           <button className={`icon-btn ${sleepAt ? 'on' : ''}`} onClick={() => setSheet('sleep')} aria-label="Sleep timer">
             <Icon name="moon" size={18} />
           </button>
@@ -133,6 +154,7 @@ export function DesktopShell() {
       {sheet === 'devices' && <DevicePicker onClose={() => setSheet(null)} />}
       {sheet === 'sleep' && <SleepTimer onClose={() => setSheet(null)} />}
       {sheet === 'theme' && <ThemePicker onClose={() => setSheet(null)} />}
+      {sheet === 'settings' && <Settings onClose={() => setSheet(null)} />}
     </div>
   );
 }

@@ -88,6 +88,12 @@ function read(): Token | null {
   }
 }
 
+/** Synchronous token read for unload handlers, which cannot await a refresh. */
+export function peekToken(): string | null {
+  const t = read();
+  return t && Date.now() < t.expires_at ? t.access_token : null;
+}
+
 let refreshing: Promise<Token> | null = null;
 
 export async function getToken(): Promise<string | null> {
