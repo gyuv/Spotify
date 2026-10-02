@@ -42,3 +42,10 @@ Install it on a phone, or on a TV with `adb install`. Also add `rymusic://callba
 
 **iOS:** Apple requires a Mac with Xcode and a paid developer account to install native apps. Without one, open
 https://ry-music.vercel.app in Safari and choose **Share → Add to Home Screen**, which gives you the full app with the gold icon.
+
+## Troubleshooting
+- **"Active premium subscription required for the owner of the app"**: Spotify only lets an app in
+  Development mode work if the Spotify account that *created the app* on developer.spotify.com has Premium.
+  Upgrade that account, or recreate the app under an account that has Premium, and update `VITE_SPOTIFY_CLIENT_ID`.
+- **"redirect_uri: Not matching configuration"**: add `https://ry-music.vercel.app/callback` to the app's
+  Redirect URIs, click Save, and open the site at exactly that domain.

@@ -56,8 +56,23 @@ export async function api<T = unknown>(path: string, init: RequestInit = {}): Pr
     return api(path, init);
   }
   const text = await res.text();
-  if (!res.ok) throw new Error(JSON.parse(text || '{}')?.error?.message ?? `HTTP ${res.status}`);
-  return (text ? JSON.parse(text) : undefined) as T;
+  if (!res.ok) {
+    // Spotify sometimes answers errors in plain text (e.g. "Active premium subscription required…").
+    let msg = text.trim() || `HTTP ${res.status}`;
+    try {
+      msg = JSON.parse(text)?.error?.message ?? msg;
+    } catch {
+      /* plain-text error body */
+    }
+    if (/premium subscription required/i.test(msg))
+      msg = 'Spotify requires the owner of this app’s developer account to have Premium. See docs/DEPLOY.md.';
+    throw new Error(msg);
+  }
+  try {
+    return (text ? JSON.parse(text) : undefined) as T;
+  } catch {
+    throw new Error(text.slice(0, 160));
+  }
 }
 
 const q = (o: Record<string, string | number | undefined>) =>
