@@ -49,3 +49,10 @@ https://ry-music.vercel.app in Safari and choose **Share → Add to Home Screen*
   Upgrade that account, or recreate the app under an account that has Premium, and update `VITE_SPOTIFY_CLIENT_ID`.
 - **"redirect_uri: Not matching configuration"**: add `https://ry-music.vercel.app/callback` to the app's
   Redirect URIs, click Save, and open the site at exactly that domain.
+
+## Guest mode (free, no login, no Premium needed anywhere)
+On the welcome screen, tap **Listen free, no login**. The app also switches there automatically if Spotify
+rejects the developer app. Guest mode plays curated playlists or any pasted Spotify link through
+Spotify's public embed player, with Spotify's ads. Full songs play for people logged in at open.spotify.com
+in that browser; everyone else gets 30-second previews. Search, library, lyrics, stats and Party Rooms need
+a connected account whose developer app owner has Premium.

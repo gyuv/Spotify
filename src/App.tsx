@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { CommandPalette } from './components/CommandPalette';
+import { GuestApp } from './components/GuestApp';
 import { Toast } from './components/common';
-import { art } from './lib/api';
+import { art, Spotify } from './lib/api';
 import { getToken, handleCallback, isConfigured, login } from './lib/auth';
 import { dominant } from './lib/color';
 import { startEngine } from './lib/engine';
 import { useLayout } from './lib/layout';
-import { useStore } from './lib/store';
+import { pref, savePref, useStore } from './lib/store';
 import { DesktopShell } from './shells/DesktopShell';
 import { MobileShell } from './shells/MobileShell';
 import { TvShell } from './shells/TvShell';
@@ -31,7 +32,7 @@ function useAccent() {
 }
 
 export function App() {
-  const [state, setState] = useState<'loading' | 'out' | 'in'>('loading');
+  const [state, setState] = useState<'loading' | 'out' | 'in' | 'guest'>(() => (pref('guest', false) ? 'guest' : 'loading'));
   const layout = useLayout();
   const free = useStore((s) => s.free);
   useAccent();
@@ -46,6 +47,7 @@ export function App() {
         }
         history.replaceState(null, '', '/');
       }
+      if (pref('guest', false) && location.pathname !== '/callback') return;
       setState((await getToken().catch(() => null)) ? 'in' : 'out');
     })();
     // Native: OAuth returns via the pulse:// deep link.
@@ -64,12 +66,28 @@ export function App() {
 
   useEffect(() => {
     if (state !== 'in') return;
+    // If Spotify blocks the developer app (owner without Premium), fall back to Guest mode.
+    Spotify.me().catch((e: Error) => {
+      if (/premium/i.test(e.message)) {
+        useStore.getState().notify('Spotify needs the app owner to have Premium — switched to free Guest mode');
+        savePref('guest', true);
+        setState('guest');
+      }
+    });
     startEngine();
     if (new URLSearchParams(location.search).get('party')) useStore.getState().go({ name: 'party' });
   }, [state]);
 
   if (state === 'loading') return <div className="splash"><img src="/icon.svg" alt="" /></div>;
-  if (state === 'out') return <Welcome layout={layout} />;
+  if (state === 'out') return <Welcome layout={layout} onGuest={() => (savePref('guest', true), setState('guest'))} />;
+  if (state === 'guest')
+    return (
+      <div className={`app layout-${layout}`}>
+        <div className="ambient" />
+        <GuestApp onConnect={() => (savePref('guest', false), isConfigured() ? login() : setState('out'))} />
+        <Toast />
+      </div>
+    );
 
   return (
     <div className={`app layout-${layout} ${free ? 'free' : ''}`}>
@@ -83,7 +101,7 @@ export function App() {
   );
 }
 
-function Welcome({ layout }: { layout: string }) {
+function Welcome({ layout, onGuest }: { layout: string; onGuest: () => void }) {
   return (
     <div className={`welcome layout-${layout}`}>
       <div className="ambient" />
@@ -103,7 +121,10 @@ function Welcome({ layout }: { layout: string }) {
             Variables) and redeploy. See docs/DEPLOY.md.
           </p>
         )}
-        <small>Uses Spotify’s official API. Playback needs Spotify Premium.</small>
+        <button className="cta ghost" onClick={onGuest}>
+          Listen free, no login
+        </button>
+        <small>Uses Spotify’s official API and player. Free listening includes Spotify’s ads.</small>
       </div>
     </div>
   );
