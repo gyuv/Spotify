@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Spotify, type PlaybackState, type Track } from './api';
+import { isAudius, playAudius, stopAudius } from './audius';
 import { remember } from './mode';
 
 export type View =
@@ -113,7 +114,7 @@ export async function refresh() {
     const { liked, set } = useStore.getState();
     set({ playback: pb, position: pb?.progress_ms ?? 0 });
     const id = pb?.item?.id;
-    if (id && !(id in liked)) {
+    if (id && !(id in liked) && !isAudius(pb?.item?.uri)) {
       const [saved] = await Spotify.isSaved([id]);
       set({ liked: { ...useStore.getState().liked, [id]: saved } });
     }
@@ -124,6 +125,7 @@ export async function refresh() {
 
 export async function toggleLike(t: Track) {
   const { liked, set, notify } = useStore.getState();
+  if (isAudius(t.uri)) return notify('Liking works for Spotify songs only');
   const now = !liked[t.id];
   set({ liked: { ...liked, [t.id]: now } });
   if ('vibrate' in navigator) navigator.vibrate?.(12);
@@ -137,6 +139,8 @@ export async function toggleLike(t: Track) {
 }
 
 export function playTracks(tracks: Track[], start = 0) {
+  if (isAudius(tracks[start]?.uri)) return playAudius(tracks.filter((t) => isAudius(t.uri)), start);
+  stopAudius();
   remember(tracks);
   const { sdkDeviceId, playback } = useStore.getState();
   const device = playback?.device?.id ? undefined : sdkDeviceId ?? undefined;
@@ -144,6 +148,7 @@ export function playTracks(tracks: Track[], start = 0) {
 }
 
 export function playContext(uri: string, offset?: number | string) {
+  stopAudius();
   const { sdkDeviceId, playback } = useStore.getState();
   const device = playback?.device?.id ? undefined : sdkDeviceId ?? undefined;
   const off = offset === undefined ? {} : { offset: typeof offset === 'string' ? { uri: offset } : { position: offset } };
