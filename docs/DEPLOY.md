@@ -11,7 +11,7 @@ The repo includes a `vercel.json`. It sets the Vite build, routes `/callback` an
    | Key | Value |
    | --- | --- |
    | `VITE_SPOTIFY_CLIENT_ID` | Your Spotify app's Client ID (required) |
-   | `VITE_YOUTUBE_API_KEY` | Optional: enables Motion (music video) mode |
+   | `YOUTUBE_API_KEY` (server-only, no `VITE_` prefix) | Optional: enables Motion (music video) mode |
    | `VITE_PARTY_URL` | Optional: `wss://…` URL of your Party server (see below) |
 
    Leave `VITE_SPOTIFY_REDIRECT_URI` unset. The app uses `https://<your-domain>/callback` automatically.
@@ -34,10 +34,10 @@ everything up. Copy the service URL, change `https://` to `wss://`, and set it a
 The free plan sleeps when idle, so the first connection takes about 30 s.
 
 **Music videos (about 3 min):** Go to console.cloud.google.com → create a project → enable **YouTube Data API v3** →
-Credentials → **Create API key**. Restrict it to the `ry-music.vercel.app` website, then add it as `VITE_YOUTUBE_API_KEY` in Vercel and redeploy.
+Credentials → **Create API key**. Restrict it to the `ry-music.vercel.app` website, then add it as `YOUTUBE_API_KEY` (server-only, no `VITE_` prefix) in Vercel and redeploy.
 
 **Android / Android TV APK (no Android Studio needed):** Go to GitHub → repo **Settings → Secrets → Actions** and add
-`VITE_SPOTIFY_CLIENT_ID` (plus the optional keys). Every push then builds an APK under **Actions → Android APK → Artifacts**.
+`VITE_SPOTIFY_CLIENT_ID` (plus `VITE_PARTY_URL` if you use Party Rooms). Every push then builds an APK under **Actions → Android APK → Artifacts**.
 Install it on a phone, or on a TV with `adb install`. Also add `rymusic://callback` as a Redirect URI in Spotify.
 
 **iOS:** Apple requires a Mac with Xcode and a paid developer account to install native apps. Without one, open

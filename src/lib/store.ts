@@ -30,6 +30,8 @@ type State = {
   /** True while a crossfade transition is running (drives the UI badge). */
   fading: boolean;
   lyricsSize: LyricsSize;
+  /** Motion (music video) mode is configured on the server. */
+  ytEnabled: boolean;
   toast: string | null;
   set: (p: Partial<State>) => void;
   go: (v: View) => void;
@@ -73,6 +75,7 @@ export const useStore = create<State>((set, get) => ({
   crossfade: pref('crossfade', 6),
   fading: false,
   lyricsSize: pref<LyricsSize>('lyricsSize', 'm'),
+  ytEnabled: false,
   toast: null,
   set: (p) => set(p),
   go: (v) => set({ history: [...get().history, get().view].slice(-30), view: v }),

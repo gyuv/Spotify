@@ -3,7 +3,6 @@ import { art, artists, Spotify } from '../lib/api';
 import { react, useParty } from '../lib/party';
 import { shareTrack } from '../lib/share';
 import { act, toggleLike, useStore } from '../lib/store';
-import { youtubeEnabled } from '../lib/youtube';
 import { Controls, DevicePicker, LikeButton, Progress, SleepTimer, Volume } from './common';
 import { GlassCover } from './GlassCover';
 import { Icon } from './icons';
@@ -28,6 +27,7 @@ export function NowPlaying({ mode }: { mode: 'sheet' | 'panel' | 'tv' }) {
   const fading = useStore((s) => s.fading);
   const set = useStore((s) => s.set);
   const notify = useStore((s) => s.notify);
+  const ytEnabled = useStore((s) => s.ytEnabled);
   const [sheet, setSheet] = useState<null | 'devices' | 'sleep' | 'settings'>(null);
   const [tab, setTab] = useState<Tab>('live');
   const [stage, setStage] = useState<Stage>('art');
@@ -76,7 +76,7 @@ export function NowPlaying({ mode }: { mode: 'sheet' | 'panel' | 'tv' }) {
           <Icon name="lyrics" size={20} />
         </button>
       )}
-      {youtubeEnabled() && (
+      {ytEnabled && (
         <button className={`icon-btn ${stage === 'video' ? 'on' : ''}`} onClick={() => toggleStage('video')} aria-label="Music video">
           <Icon name="video" size={20} />
         </button>

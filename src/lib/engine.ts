@@ -3,6 +3,7 @@
 import { Spotify } from './api';
 import { getToken } from './auth';
 import { startCrossfade } from './crossfade';
+import { initYouTube } from './youtube';
 import { act, refresh, useStore } from './store';
 
 declare global {
@@ -77,6 +78,7 @@ export function startEngine() {
   loadSdk();
   mediaSession();
   startCrossfade();
+  initYouTube();
   refresh();
   let poll = window.setInterval(refresh, 3000);
   document.addEventListener('visibilitychange', () => {

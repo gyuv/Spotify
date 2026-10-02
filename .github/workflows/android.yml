@@ -2,7 +2,7 @@ name: Android APK
 
 # Builds an installable debug APK (phones + Android TV) on every push.
 # Download it from the run's "Artifacts" section. Set repository secrets
-# VITE_SPOTIFY_CLIENT_ID (and optionally VITE_YOUTUBE_API_KEY, VITE_PARTY_URL) first.
+# VITE_SPOTIFY_CLIENT_ID (and optionally VITE_PARTY_URL) first.
 on:
   push:
   workflow_dispatch:
@@ -25,7 +25,7 @@ jobs:
         env:
           VITE_SPOTIFY_CLIENT_ID: ${{ secrets.VITE_SPOTIFY_CLIENT_ID }}
           VITE_SPOTIFY_REDIRECT_URI: rymusic://callback
-          VITE_YOUTUBE_API_KEY: ${{ secrets.VITE_YOUTUBE_API_KEY }}
+          VITE_API_BASE: https://ry-music.vercel.app
           VITE_PARTY_URL: ${{ secrets.VITE_PARTY_URL }}
       - run: npx cap sync android
       - run: cd android && chmod +x gradlew && ./gradlew assembleDebug

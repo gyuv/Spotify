@@ -1,26 +1,29 @@
 // "Motion" mode: finds the official music video on YouTube and plays it muted, through YouTube's
 // official embedded player, synced to the Spotify audio. Audio always comes from Spotify.
-const KEY = import.meta.env.VITE_YOUTUBE_API_KEY as string | undefined;
-export const youtubeEnabled = () => Boolean(KEY);
+import { useStore } from './store';
+
+// The YouTube key stays on the server (api/yt.js). Web uses same-origin /api; native apps set
+// VITE_API_BASE to the deployed site, e.g. https://ry-music.vercel.app.
+const API = ((import.meta.env.VITE_API_BASE as string | undefined) ?? '').replace(/\/$/, '');
+
+/** Asks the server whether Motion mode is configured; shows the video button only if so. */
+export async function initYouTube() {
+  try {
+    const r = await fetch(`${API}/api/yt?ping=1`);
+    if (r.ok) useStore.getState().set({ ytEnabled: Boolean((await r.json()).enabled) });
+  } catch {
+    /* no API (e.g. local dev without vercel) → Motion stays hidden */
+  }
+}
 
 const cache = new Map<string, string | null>();
 
 export async function findVideo(title: string, artist: string): Promise<string | null> {
   const k = `${artist}|${title}`;
   if (cache.has(k)) return cache.get(k)!;
-  const q = new URLSearchParams({
-    part: 'snippet',
-    type: 'video',
-    maxResults: '1',
-    videoEmbeddable: 'true',
-    videoCategoryId: '10',
-    q: `${artist} ${title} official video`,
-    key: KEY!,
-  });
   try {
-    const r = await fetch(`https://www.googleapis.com/youtube/v3/search?${q}`);
-    const j = await r.json();
-    const id = j.items?.[0]?.id?.videoId ?? null;
+    const r = await fetch(`${API}/api/yt?${new URLSearchParams({ q: `${artist} ${title}` })}`);
+    const id = r.ok ? (((await r.json()).videoId as string | null) ?? null) : null;
     cache.set(k, id);
     return id;
   } catch {

@@ -56,7 +56,7 @@ Playback inside the browser needs **Spotify Premium**. That's Spotify's rule for
 
 | Variable | Enables |
 | --- | --- |
-| `VITE_YOUTUBE_API_KEY` | Motion mode. Create a YouTube Data API v3 key in Google Cloud Console. |
+| `YOUTUBE_API_KEY` (server-only, no `VITE_` prefix) | Motion mode. Create a YouTube Data API v3 key in Google Cloud Console. |
 | `VITE_PARTY_URL` | Party Rooms server (`ws://…` locally, `wss://…` in production). |
 | `VITE_LYRICS_URL` | Lyrics source. Defaults to the public LRCLIB; point it at a self-hosted mirror if you prefer. |
 
