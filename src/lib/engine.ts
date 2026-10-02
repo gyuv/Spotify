@@ -3,6 +3,7 @@
 import { Spotify } from './api';
 import { getToken } from './auth';
 import { startCrossfade } from './crossfade';
+import { startFreeMode } from './free';
 import { initYouTube } from './youtube';
 import { act, refresh, useStore } from './store';
 
@@ -75,8 +76,11 @@ let started = false;
 export function startEngine() {
   if (started) return;
   started = true;
-  loadSdk();
   mediaSession();
+  // Free accounts can't use the Premium-only player APIs: switch to Spotify's embed player.
+  Spotify.me()
+    .then((me) => (me.product === 'premium' ? loadSdk() : startFreeMode()))
+    .catch(() => loadSdk());
   startCrossfade();
   initYouTube();
   refresh();

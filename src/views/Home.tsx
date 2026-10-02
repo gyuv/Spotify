@@ -1,7 +1,8 @@
 import { Card, Cover, Shelf } from '../components/common';
 import { Icon } from '../components/icons';
 import { art, artists, Spotify, type Track } from '../lib/api';
-import { playContext, playTracks, useStore } from '../lib/store';
+import { useState } from 'react';
+import { playContext, playTracks, pref, savePref, useStore } from '../lib/store';
 import { useLoad } from './hooks';
 
 const greet = () => {
@@ -49,6 +50,7 @@ export function Home() {
         <h1>{me.data?.display_name?.split(' ')[0] ?? 'Listener'}, let’s go live.</h1>
         {me.error && <p className="error">{me.error}</p>}
       </div>
+      <FreeNotice />
 
       <div className="mix-grid">
         {mix('Heavy Rotation', heavy.data?.items)}
@@ -99,6 +101,27 @@ export function Home() {
           </div>
         </section>
       )}
+    </div>
+  );
+}
+
+function FreeNotice() {
+  const free = useStore((s) => s.free);
+  const [hidden, setHidden] = useState(() => pref('freeNoticeHidden', false));
+  if (!free || hidden) return null;
+  return (
+    <div className="free-notice">
+      <strong>Free mode</strong>
+      <span>
+        Songs play through Spotify’s own player, with Spotify’s ads. For full songs instead of 30-second previews, log in at{' '}
+        <a href="https://open.spotify.com" target="_blank" rel="noreferrer">
+          open.spotify.com
+        </a>{' '}
+        in this browser. Get Premium for ad-free play on any speaker, crossfade and volume control.
+      </span>
+      <button className="chip" onClick={() => (setHidden(true), savePref('freeNoticeHidden', true))}>
+        Got it
+      </button>
     </div>
   );
 }

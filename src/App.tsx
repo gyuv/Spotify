@@ -33,6 +33,7 @@ function useAccent() {
 export function App() {
   const [state, setState] = useState<'loading' | 'out' | 'in'>('loading');
   const layout = useLayout();
+  const free = useStore((s) => s.free);
   useAccent();
 
   useEffect(() => {
@@ -71,7 +72,7 @@ export function App() {
   if (state === 'out') return <Welcome layout={layout} />;
 
   return (
-    <div className={`app layout-${layout}`}>
+    <div className={`app layout-${layout} ${free ? 'free' : ''}`}>
       <div className="ambient" />
       {layout === 'desktop' && <DesktopShell />}
       {layout === 'mobile' && <MobileShell />}

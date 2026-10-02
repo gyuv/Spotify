@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Spotify, type PlaybackState, type Track } from './api';
+import { remember } from './mode';
 
 export type View =
   | { name: 'home' }
@@ -32,6 +33,8 @@ type State = {
   lyricsSize: LyricsSize;
   /** Motion (music video) mode is configured on the server. */
   ytEnabled: boolean;
+  /** Signed in with a free account: playback runs through Spotify's embed player (with Spotify's ads). */
+  free: boolean;
   toast: string | null;
   set: (p: Partial<State>) => void;
   go: (v: View) => void;
@@ -76,6 +79,7 @@ export const useStore = create<State>((set, get) => ({
   fading: false,
   lyricsSize: pref<LyricsSize>('lyricsSize', 'm'),
   ytEnabled: false,
+  free: false,
   toast: null,
   set: (p) => set(p),
   go: (v) => set({ history: [...get().history, get().view].slice(-30), view: v }),
@@ -133,6 +137,7 @@ export async function toggleLike(t: Track) {
 }
 
 export function playTracks(tracks: Track[], start = 0) {
+  remember(tracks);
   const { sdkDeviceId, playback } = useStore.getState();
   const device = playback?.device?.id ? undefined : sdkDeviceId ?? undefined;
   return act(() => Spotify.play({ uris: tracks.slice(start, start + 100).map((t) => t.uri) }, device));

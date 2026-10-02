@@ -1,4 +1,5 @@
 import { getToken } from './auth';
+import { freeTransport } from './mode';
 
 export type Image = { url: string; width?: number; height?: number };
 export type Artist = { id: string; name: string; images?: Image[]; genres?: string[]; uri: string };
@@ -109,6 +110,7 @@ export const Spotify = {
     api<{ tracks: { items: Track[] }; artists: { items: Artist[] }; albums: { items: Album[] }; playlists: { items: (Playlist | null)[] } }>(
       `/search${q({ q: query, type: 'track,artist,album,playlist', limit: 10 })}`,
     ),
+  track: (id: string) => api<Track>(`/tracks/${id}`),
   artistTop: (id: string) => api<{ tracks: Track[] }>(`/artists/${id}/top-tracks`),
   albumTracks: (id: string) => api<Album & { tracks: { items: Omit<Track, 'album'>[] } }>(`/albums/${id}`),
   isSaved: (ids: string[]) => api<boolean[]>(`/me/library/contains${q({ uris: ids.map((i) => `spotify:track:${i}`).join(',') })}`)
@@ -138,6 +140,15 @@ export const Spotify = {
   enqueue: (uri: string) => post(`/me/player/queue${q({ uri })}`),
   transfer: (id: string, play = true) => put('/me/player', { device_ids: [id], play }),
 };
+
+// Route player commands to the free-mode embed player when it is active.
+for (const k of ['playback', 'devices', 'queue', 'play', 'pause', 'next', 'prev', 'seek', 'volume', 'shuffle', 'repeat', 'enqueue', 'transfer'] as const) {
+  const orig = Spotify[k] as (...a: any[]) => Promise<any>;
+  (Spotify as Record<string, unknown>)[k] = (...a: any[]) => {
+    const f = freeTransport?.[k];
+    return f ? f(...a) : orig(...a);
+  };
+}
 
 export const art = (imgs: Image[] | null | undefined, min = 300) => {
   if (!imgs?.length) return '';

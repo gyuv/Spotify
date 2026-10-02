@@ -51,6 +51,9 @@ npm test                    # unit tests (lyrics parser, crossfade engine)
 4. While your Spotify app is in *Development mode*, add each listener's email under **User Management**.
 
 Playback inside the browser needs **Spotify Premium**. That's Spotify's rule for third-party players.
+**Free accounts** switch automatically to *free mode*: songs play through Spotify's official embed player, with Spotify's ads,
+and the full RY Music interface stays on top. Listeners logged in to open.spotify.com hear full songs; everyone else gets 30-second previews.
+The Spotify account that owns the developer app still needs Premium.
 
 ### Optional keys
 

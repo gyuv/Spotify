@@ -522,3 +522,16 @@ button.lyric:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,
 @keyframes glow-breathe { 0%, 100% { transform: translateY(6%) scale(.95); } 50% { transform: translateY(16%) scale(.84); opacity: .5; } }
 @keyframes glint { 0%, 55% { transform: translateX(-70%); } 85%, 100% { transform: translateX(70%); } }
 .np-panel .np-art .glass-body, .np-tv .np-art .glass-body { border-radius: 40px; }
+
+/* ---------- Free mode (Spotify embed player) ---------- */
+.embed-dock { position: fixed; z-index: 45; left: 10px; right: 10px; bottom: calc(140px + var(--safe-b)); height: 80px;
+  border-radius: 14px; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,.55); }
+.embed-dock iframe { display: block; border: 0; }
+@media (min-width: 900px) { .embed-dock { left: 96px; right: auto; width: 360px; bottom: 112px; } }
+.app.free .m-content { padding-bottom: calc(260px + var(--safe-b)); }
+.app.free .canvas { padding-bottom: 120px; }
+.free-notice { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 0 0 16px; padding: 14px 16px; border-radius: var(--radius);
+  background: linear-gradient(120deg, rgba(245,196,81,.16), rgba(255,255,255,.03)); border: 1px solid var(--line); font-size: 14px; }
+.free-notice strong { color: var(--a); }
+.free-notice span { flex: 1 1 260px; color: var(--muted); }
+.free-notice a { color: var(--text); }
