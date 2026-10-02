@@ -2,10 +2,14 @@
 // Run: node server/party.mjs   (PORT env, default 8787)
 // It never touches audio: each member plays through their own Spotify account; the host's
 // playback state is relayed so everyone stays in sync, and guests can suggest tracks.
+import { createServer } from 'node:http';
 import { WebSocketServer } from 'ws';
 
 const PORT = Number(process.env.PORT ?? 8787);
-const wss = new WebSocketServer({ port: PORT });
+// Plain HTTP 200 on / so hosts like Render can health-check; WebSockets upgrade on the same port.
+const http = createServer((_, res) => res.end('RY Music party server OK'));
+const wss = new WebSocketServer({ server: http });
+http.listen(PORT);
 /** @type {Map<string, { host: any, members: Map<any, { name: string, id: string }>, state: any, playlist: any }>} */
 const rooms = new Map();
 

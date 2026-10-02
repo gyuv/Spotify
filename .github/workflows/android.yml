@@ -1,0 +1,35 @@
+name: Android APK
+
+# Builds an installable debug APK (phones + Android TV) on every push.
+# Download it from the run's "Artifacts" section. Set repository secrets
+# VITE_SPOTIFY_CLIENT_ID (and optionally VITE_YOUTUBE_API_KEY, VITE_PARTY_URL) first.
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm run build
+        env:
+          VITE_SPOTIFY_CLIENT_ID: ${{ secrets.VITE_SPOTIFY_CLIENT_ID }}
+          VITE_SPOTIFY_REDIRECT_URI: rymusic://callback
+          VITE_YOUTUBE_API_KEY: ${{ secrets.VITE_YOUTUBE_API_KEY }}
+          VITE_PARTY_URL: ${{ secrets.VITE_PARTY_URL }}
+      - run: npx cap sync android
+      - run: cd android && chmod +x gradlew && ./gradlew assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ry-music-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk

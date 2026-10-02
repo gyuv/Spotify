@@ -1,0 +1,12 @@
+# One-click Party Rooms server on Render (free plan): Dashboard → New → Blueprint → pick this repo.
+services:
+  - type: web
+    name: ry-music-party
+    runtime: node
+    plan: free
+    buildCommand: npm ci --omit=dev
+    startCommand: node server/party.mjs
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"

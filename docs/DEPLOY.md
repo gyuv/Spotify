@@ -27,3 +27,18 @@ Everything else (lyrics, crossfade, the player and stats) runs entirely in the b
 ## Install it as an app
 Open the site on a phone and choose **Add to Home Screen** (iOS Safari) or **Install app**
 (Android Chrome). It launches full-screen with the gold RY icon.
+
+## Optional extras, step by step
+**Party Rooms server (free, about 3 min):** Go to render.com → New → **Blueprint** → choose this repo. `render.yaml` sets
+everything up. Copy the service URL, change `https://` to `wss://`, and set it as `VITE_PARTY_URL` in Vercel. Then redeploy.
+The free plan sleeps when idle, so the first connection takes about 30 s.
+
+**Music videos (about 3 min):** Go to console.cloud.google.com → create a project → enable **YouTube Data API v3** →
+Credentials → **Create API key**. Restrict it to the `ry-music.vercel.app` website, then add it as `VITE_YOUTUBE_API_KEY` in Vercel and redeploy.
+
+**Android / Android TV APK (no Android Studio needed):** Go to GitHub → repo **Settings → Secrets → Actions** and add
+`VITE_SPOTIFY_CLIENT_ID` (plus the optional keys). Every push then builds an APK under **Actions → Android APK → Artifacts**.
+Install it on a phone, or on a TV with `adb install`. Also add `rymusic://callback` as a Redirect URI in Spotify.
+
+**iOS:** Apple requires a Mac with Xcode and a paid developer account to install native apps. Without one, open
+https://ry-music.vercel.app in Safari and choose **Share → Add to Home Screen**, which gives you the full app with the gold icon.
