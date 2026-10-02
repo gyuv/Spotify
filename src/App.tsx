@@ -98,7 +98,8 @@ function Welcome({ layout }: { layout: string }) {
           </button>
         ) : (
           <p className="error">
-            Set <code>VITE_SPOTIFY_CLIENT_ID</code> in <code>.env</code> — see README.
+            Almost there: add <code>VITE_SPOTIFY_CLIENT_ID</code> (in <code>.env</code> locally, or Vercel → Settings → Environment
+            Variables) and redeploy. See docs/DEPLOY.md.
           </p>
         )}
         <small>Uses Spotify’s official API. Playback needs Spotify Premium.</small>

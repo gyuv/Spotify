@@ -66,6 +66,7 @@ Playback inside the browser needs **Spotify Premium**. That's Spotify's rule for
 - [Android TV](docs/ANDROID_TV.md)
 - [iOS / iPadOS](docs/IOS.md)
 - [Party Rooms server and deployment](docs/PARTY.md)
+- [Hosting the web app on Vercel](docs/DEPLOY.md). Live at <https://ry-music.vercel.app>
 
 ## How playback works
 
