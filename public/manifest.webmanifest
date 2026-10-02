@@ -1,0 +1,10 @@
+{
+  "name": "RY Music — Live Player",
+  "short_name": "RY Music",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0805",
+  "theme_color": "#0a0805",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

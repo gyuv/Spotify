@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 320x180 Android TV home-screen banner: gold RY monogram on black. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#0A0805" android:pathData="M0,0h320v180h-320z" />
+    <path android:strokeColor="#F5C451" android:strokeWidth="9" android:strokeLineCap="round" android:strokeLineJoin="round"
+        android:pathData="M40,140V40h30c17,0 27,10 27,25s-10,25 -27,25h-30M70,90l27,50" />
+    <path android:strokeColor="#F5C451" android:strokeWidth="9" android:strokeLineCap="round" android:strokeLineJoin="round"
+        android:pathData="M110,40l26,44 26,-44M136,84v46" />
+    <path android:fillColor="#F5C451" android:pathData="M136,130m-12,0a12,9 0,1 0,24 0a12,9 0,1 0,-24 0" />
+    <path android:fillColor="#FFF3C4" android:pathData="M184,78h100v6h-100zM184,98h70v5h-70z" />
+</vector>

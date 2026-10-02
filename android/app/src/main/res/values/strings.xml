@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">RY Music</string>
+    <string name="title_activity_main">RY Music</string>
+    <string name="package_name">app.rymusic.player</string>
+    <string name="custom_url_scheme">app.rymusic.player</string>
+</resources>

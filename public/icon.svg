@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- RY monogram: the Y's stem is a music note (head + flag); a sound wave runs under the letters. -->
+  <defs>
+    <linearGradient id="gold" gradientUnits="userSpaceOnUse" x1="80" y1="100" x2="440" y2="460">
+      <stop offset="0" stop-color="#fff3c4"/>
+      <stop offset=".3" stop-color="#f5c451"/>
+      <stop offset=".62" stop-color="#b9821f"/>
+      <stop offset="1" stop-color="#ffe08a"/>
+    </linearGradient>
+    <radialGradient id="bg" cx=".5" cy=".35" r=".8">
+      <stop offset="0" stop-color="#1e1708"/>
+      <stop offset="1" stop-color="#070502"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="120" fill="url(#bg)"/>
+  <rect x="14" y="14" width="484" height="484" rx="108" fill="none" stroke="url(#gold)" stroke-opacity=".55" stroke-width="4"/>
+  <g fill="none" stroke="url(#gold)" stroke-linecap="round" stroke-linejoin="round">
+    <!-- R -->
+    <path stroke-width="30" d="M92 380V132h74c42 0 68 24 68 62s-26 62-68 62H92M166 256l68 124"/>
+    <!-- Y arms -->
+    <path stroke-width="30" d="M280 132l76 110 76-110"/>
+    <!-- Y stem as note stem + flag -->
+    <path stroke-width="26" d="M356 242v118"/>
+    <path stroke-width="18" d="M356 248c34 8 58 30 58 66"/>
+    <!-- sound wave -->
+    <path stroke-width="10" stroke-opacity=".8" d="M96 430h40l14-18 16 34 16-48 16 52 16-34 14 14h228"/>
+  </g>
+  <!-- note head -->
+  <ellipse cx="330" cy="366" rx="30" ry="22" transform="rotate(-22 330 366)" fill="url(#gold)"/>
+</svg>
