@@ -67,6 +67,8 @@ export async function api<T = unknown>(path: string, init: RequestInit = {}): Pr
     }
     if (/premium subscription required/i.test(msg))
       msg = 'Spotify requires the owner of this app’s developer account to have Premium. See docs/DEPLOY.md.';
+    if (res.status === 403 && /not.{0,20}registered|developer dashboard/i.test(msg))
+      msg = 'This Spotify account isn’t added to the app yet. The app owner must add its email under User Management at developer.spotify.com/dashboard.';
     throw new Error(msg);
   }
   try {

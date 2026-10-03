@@ -63,6 +63,20 @@ The Spotify account that owns the developer app still needs Premium.
 | `VITE_PARTY_URL` | Party Rooms server (`ws://…` locally, `wss://…` in production). |
 | `VITE_LYRICS_URL` | Lyrics source. Defaults to the public LRCLIB; point it at a self-hosted mirror if you prefer. |
 
+## Wrapper APK (Spotify web player)
+
+A second Android build that skips the developer dashboard entirely: the app opens Spotify's own web player
+(open.spotify.com) full screen. Log in with any account. Free accounts get full songs with Spotify's normal ads.
+
+```bash
+npm install
+npm run android:wrapper   # syncs with RY_WRAPPER=1, then opens Android Studio → Run / Build APK
+```
+
+Run `npm run android` to go back to the regular RY Music build. The screens are Spotify's own design, and
+no ads are blocked. On the website, just use https://open.spotify.com directly: Spotify doesn't allow its
+player to be embedded inside other sites.
+
 ## Platform guides
 
 - [Android phone](docs/ANDROID.md)

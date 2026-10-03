@@ -68,7 +68,11 @@ export function App() {
     if (state !== 'in') return;
     // If Spotify blocks the developer app (owner without Premium), fall back to Guest mode.
     Spotify.me().catch((e: Error) => {
-      if (/premium/i.test(e.message)) {
+      if (/isn’t added to the app/.test(e.message)) {
+        useStore.getState().notify(e.message);
+        savePref('guest', true);
+        setState('guest');
+      } else if (/premium/i.test(e.message)) {
         useStore.getState().notify('Spotify needs the app owner to have Premium — switched to free Guest mode');
         savePref('guest', true);
         setState('guest');

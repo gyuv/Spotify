@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Card, TrackRow } from '../components/common';
 import { Icon } from '../components/icons';
-import { art, Spotify } from '../lib/api';
+import { art, Spotify, type Track } from '../lib/api';
+import { Audius } from '../lib/audius';
 import { playContext, playTracks, pref, savePref, useStore } from '../lib/store';
 
 type Res = Awaited<ReturnType<typeof Spotify.search>>;
@@ -11,12 +12,19 @@ export function Search() {
   const go = useStore((s) => s.go);
   const [q, setQ] = useState('');
   const [res, setRes] = useState<Res | null>(null);
+  const [free, setFree] = useState<Track[]>([]);
+  const [trending, setTrending] = useState<Track[]>([]);
   const [recent, setRecent] = useState<string[]>(() => pref<string[]>('searches', []));
 
   useEffect(() => {
-    if (q.trim().length < 2) return setRes(null);
+    Audius.trending().then(setTrending).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (q.trim().length < 2) return (setRes(null), setFree([]));
     const id = setTimeout(() => {
       Spotify.search(q).then(setRes).catch(() => {});
+      Audius.search(q).then((t) => setFree(t.slice(0, 6))).catch(() => setFree([]));
       const next = [q, ...recent.filter((r) => r !== q)].slice(0, 8);
       setRecent(next);
       savePref('searches', next);
@@ -51,6 +59,7 @@ export function Search() {
               </div>
             </>
           )}
+          {trending.length > 0 && <FreeShelf title="Free on Audius · Trending" tracks={trending.slice(0, 6)} />}
           <h2>Vibes</h2>
           <div className="mood-grid">
             {MOODS.map((m, i) => (
@@ -72,6 +81,7 @@ export function Search() {
               ))}
             </div>
           )}
+          {free.length > 0 && <FreeShelf title="Free on Audius" tracks={free} />}
           <h2>Artists</h2>
           <div className="shelf-row">
             {res.artists.items.map((a) => (
@@ -92,6 +102,19 @@ export function Search() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/** Tracks from Audius: free to stream for everyone, no ads and no Premium needed. */
+function FreeShelf({ title, tracks }: { title: string; tracks: Track[] }) {
+  return (
+    <div className="top-result">
+      <h2>{title}</h2>
+      <p className="muted small">Free, ad-free music published by independent artists on Audius.</p>
+      {tracks.map((t, i) => (
+        <TrackRow key={t.id} track={t} onPlay={() => playTracks(tracks, i)} />
+      ))}
     </div>
   );
 }
