@@ -11,6 +11,7 @@
     "cap:sync": "npm run build && npx cap sync",
     "android": "npm run cap:sync && npx cap open android",
     "ios": "npm run cap:sync && npx cap open ios",
+    "android:wrapper": "npm run build && RY_WRAPPER=1 npx cap sync android && npx cap open android",
     "party": "node server/party.mjs",
     "test": "vitest run"
   },
