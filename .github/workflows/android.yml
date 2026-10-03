@@ -33,3 +33,30 @@ jobs:
         with:
           name: ry-music-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
+
+  # The wrapper APK opens Spotify's own web player full screen (see README → Wrapper APK).
+  # It needs no secrets: any Spotify account, free included, logs in inside the app.
+  wrapper-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm run build
+        env:
+          VITE_SPOTIFY_CLIENT_ID: wrapper-placeholder
+      - run: npx cap sync android
+        env:
+          RY_WRAPPER: '1'
+      - run: cd android && chmod +x gradlew && ./gradlew assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ry-music-wrapper-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
